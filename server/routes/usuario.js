@@ -2,6 +2,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
+// models
+const Usuario = require('../models/usuario');
+
+// app
 const app = express();
 
 // use body-parser to parse everything
@@ -16,18 +20,30 @@ app.get('/usuario', (request, response) => {
 app.post('/usuario', (request, response) => {
     let body = request.body;
 
-    if (body.nombre === undefined) {
-        response.status(400).json({
-            ok: false,
-            msg: "Nombre es necesario"
-        });
-    } else {
+    let usuario = new Usuario({
+        nombre: body.nombre,
+        email: body.correo,
+        password: body.password,
+        rol: body.rol
+    });
+
+    // guardar en la bd
+
+    usuario.save((err, usuarioDB) => {
+        if (err) {
+            console.log("error save");
+            return response.json({
+                ok: false,
+                err
+            });
+        }
 
         response.json({
-            persona: body
+            ok: true,
+            usuario: usuarioDB
         });
-    }
-    let id = request.params.id;
+
+    });
 });
 
 app.put('/usuario/:id', (request, response) => {

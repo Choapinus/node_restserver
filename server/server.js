@@ -13,7 +13,10 @@ app.use(require('./routes/usuario'));
 
 // mongo connect
 mongoose.connect('mongodb://localhost:27017/cafe', { useNewUrlParser: true }, (err, res) => {
-    if (err) throw err;
+    if (err) {
+        console.log('error mongo');
+        throw err;
+    }
     console.log("db online");
 });
 
