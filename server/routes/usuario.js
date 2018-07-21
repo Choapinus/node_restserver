@@ -1,6 +1,8 @@
 // requires
 const express = require('express');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
+const _ = require('underscore'); // guion bajo por standart
 
 // models
 const Usuario = require('../models/usuario');
@@ -23,7 +25,7 @@ app.post('/usuario', (request, response) => {
     let usuario = new Usuario({
         nombre: body.nombre,
         email: body.correo,
-        password: body.password,
+        password: bcrypt.hashSync(body.password, 10),
         rol: body.rol
     });
 
@@ -38,6 +40,10 @@ app.post('/usuario', (request, response) => {
             });
         }
 
+        // usuarioDB.password = null; // no elimina el campo del objeto y aparecera como password: null
+        // tampoco se puede borrar con delete usuarioDB.password;
+        // asi que se hace desde el schema
+
         response.json({
             ok: true,
             usuario: usuarioDB
@@ -47,9 +53,30 @@ app.post('/usuario', (request, response) => {
 });
 
 app.put('/usuario/:id', (request, response) => {
-    response.json({
-        id
-    });
+
+    let id = request.params.id; // params viene de la uri
+    // let body = request.body; // faltan validaciones
+    let body = _.pick(request.body, ['nombre', 'email', 'img', 'role', 'estado']);
+
+    // sacar weas que no quieres que cambien, pero existe una libreria para hacerlo mejor
+    // delete body.password;
+    // delete body.google;
+
+    Usuario.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, userdb) => {
+        if (err) {
+            return response.status(400).json({
+                ok: false,
+                err
+            });
+        }
+
+        response.json({
+            ok: true,
+            user: userdb
+        });
+
+    })
+
 });
 
 app.delete('/usuario', (request, response) => {

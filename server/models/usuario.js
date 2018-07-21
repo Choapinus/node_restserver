@@ -3,7 +3,7 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 let rolesValidos = {
     values: ['ADMIN_ROLE', 'USER_ROLE'],
-    message: '{VALUE} no es un rol valido'
+    message: '{VALUE} no es un rol valido' // lo mismo con el mensaje de error del email, en VALUE se pone lo que el usuario ingresa
 };
 
 let Schema = mongoose.Schema;
@@ -40,6 +40,15 @@ let usuarioSchema = new Schema({
         default: false
     }
 });
+
+usuarioSchema.methods.toJSON = function() {
+
+    let user = this;
+    let userObject = user.toObject();
+    delete userObject.password;
+
+    return userObject;
+}
 
 usuarioSchema.plugin(uniqueValidator, { message: '{PATH} debe de ser unico' });
 // PATH se reemplaza por el nombre de variable, en este caso, email
