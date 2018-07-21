@@ -16,7 +16,27 @@ app.use(bodyParser.json()); // parse application/json
 
 // services
 app.get('/usuario', (request, response) => {
-    response.json('get Usuario');
+    // retornar registros paginados
+
+    let desde = Number(request.query.desde) || 0;
+    // request.query tambien viene desde la uri, pero con estructura de url:8080/user?desde=12
+    let limite = Number(request.query.limite) || 5;
+
+    Usuario.find({}) // el find trae todos los registros
+        .skip(desde)
+        .limit(limite)
+        .exec((err, usuarios) => { // el exec dira como ejecutar el find
+            if (err) {
+                response.status(400).json({
+                    err
+                });
+            }
+
+            response.json({
+                ok: true,
+                usuarios
+            })
+        });
 });
 
 app.post('/usuario', (request, response) => {
