@@ -20,7 +20,7 @@ let urlDB;
 if (process.env.NODE_ENV === 'dev')
     urlDB = 'mongodb://localhost:27017/cafe';
 else
-    urlDB = 'mongodb://don_choppy:asdf1234@ds145911.mlab.com:45911/node_cafe';
+    urlDB = process.env.MONGO_URI; // variable de entorno puesta por ti con heroku config:set varname="" via CLI
 
-// urlDB = 'mongodb://don_choppy:asdf1234@ds145911.mlab.com:45911/node_cafe'; // para probar remoto, descomentar
+// urlDB = process.env.MONGO_URI; // para probar remoto, descomentar
 process.env.URLDB = urlDB; // se debe dejar de alguna manera accesible desde otros archivos
