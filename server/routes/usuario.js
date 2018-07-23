@@ -22,7 +22,8 @@ app.get('/usuario', (request, response) => {
     // request.query tambien viene desde la uri, pero con estructura de url:8080/user?desde=12
     let limite = Number(request.query.limite) || 5;
 
-    Usuario.find({}) // el find trae todos los registros
+    Usuario.find({}, 'nombre email rol') // el find trae todos los registros
+        // el segundo argumento son los campos que quieres que se muestren en la respuesta
         .skip(desde)
         .limit(limite)
         .exec((err, usuarios) => { // el exec dira como ejecutar el find
@@ -32,10 +33,17 @@ app.get('/usuario', (request, response) => {
                 });
             }
 
-            response.json({
-                ok: true,
-                usuarios
-            })
+            // condicion count, por ejemplo: { google: true }
+            Usuario.count({}, (err, conteo) => { // primer parametro es una condicion de conteo (if)
+                // la condicion del count debe ser la misma del find para mantener consistencia de datos
+                if (err) response.status(400).json({ err });
+
+                response.json({
+                    ok: true,
+                    usuarios,
+                    count: conteo
+                });
+            });
         });
 });
 
