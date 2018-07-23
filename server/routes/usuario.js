@@ -107,8 +107,42 @@ app.put('/usuario/:id', (request, response) => {
 
 });
 
-app.delete('/usuario', (request, response) => {
-    response.json('delete Usuario');
+app.delete('/usuario/:id', (request, response) => {
+    let id = request.params.id;
+
+    // Usuario.findByIdAndRemove(id, (err, usuarioBorrado) => { // este metodo borra FISICAMENTE el registro
+
+    Usuario.findByIdAndUpdate(id, { estado: false }, { new: true }, (err, usuarioBorrado) => { // este metodo borra LOGICAMENTE el registro
+        if (err) { // cuando no existe el usuario, no tira error, solo retorna null
+            response.status(400).json({
+                ok: false,
+                err
+            });
+        }
+
+        if (!usuarioBorrado) { // hay que validar si llego el usuario o no
+            return response.status(400).json({
+                ok: false,
+                error: {
+                    message: 'Usuario no existe'
+                }
+            });
+        }
+
+        if (usuarioBorrado.estado === false) { // validacion cuando se busca eliminar logicamente el registro
+            return response.status(400).json({
+                ok: false,
+                error: {
+                    message: 'La wea ya fue borrada con anterioridad'
+                }
+            });
+        }
+
+        response.json({
+            ok: true,
+            user: usuarioBorrado
+        });
+    });
 });
 
 module.exports = app;
