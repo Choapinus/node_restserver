@@ -1,18 +1,18 @@
 // ===================================
-// ll			Puerto				ll
+// ||			Puerto				||
 // ===================================
 
 process.env.PORT = process.env.PORT || 8080;
 
 // ===================================
-// ll			Entorno				ll
+// ||			Entorno				||
 // ===================================
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'dev'; // si no existe, estoy en dev
 //process.env.NODE_ENV es una variable que provee heroku
 
 // ===================================
-// ll			DataBase			ll
+// ||			DataBase			||
 // ===================================
 
 let urlDB;
@@ -24,3 +24,16 @@ else
 
 // urlDB = process.env.MONGO_URI; // para probar remoto, descomentar
 process.env.URLDB = urlDB; // se debe dejar de alguna manera accesible desde otros archivos
+
+
+// ===================================
+// ||      Vencimiento de token	    ||
+// ===================================
+
+process.env.CADUCIDAD_TOKEN = 60 * 60 * 24 * 30;
+
+// ===================================
+// ||     Seed de autenticacion	    ||
+// ===================================
+
+process.env.SEED = process.env.SEED || 'seed-dev';

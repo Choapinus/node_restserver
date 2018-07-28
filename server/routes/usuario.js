@@ -6,6 +6,7 @@ const _ = require('underscore'); // guion bajo por standart
 
 // models
 const Usuario = require('../models/usuario');
+const { verificaToken, verificaAdminRole } = require('../middlewares/auth'); // destructurado
 
 // app
 const app = express();
@@ -15,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-
 app.use(bodyParser.json()); // parse application/json
 
 // services
-app.get('/usuario', (request, response) => {
+app.get('/usuario', verificaToken, (request, response) => { // segundo argumento es un middleware (en este caso, hecho a manito)
     // retornar registros paginados
 
     let desde = Number(request.query.desde) || 0;
@@ -34,7 +35,8 @@ app.get('/usuario', (request, response) => {
             }
 
             // condicion count, por ejemplo: { google: true }
-            Usuario.count({ estado: true }, (err, conteo) => { // primer parametro es una condicion de conteo (if)
+            // lo cambie por countDocuments porque me dice que esta deprecado :c
+            Usuario.countDocuments({ estado: true }, (err, conteo) => { // primer parametro es una condicion de conteo (if)
                 // la condicion del count debe ser la misma del find para mantener consistencia de datos
                 if (err) response.status(400).json({ err });
 
@@ -47,7 +49,7 @@ app.get('/usuario', (request, response) => {
         });
 });
 
-app.post('/usuario', (request, response) => {
+app.post('/usuario', [verificaToken, verificaAdminRole], (request, response) => {
     let body = request.body;
 
     let usuario = new Usuario({
@@ -80,7 +82,7 @@ app.post('/usuario', (request, response) => {
     });
 });
 
-app.put('/usuario/:id', (request, response) => {
+app.put('/usuario/:id', [verificaToken, verificaAdminRole], (request, response) => {
 
     let id = request.params.id; // params viene de la uri
     // let body = request.body; // faltan validaciones
@@ -107,7 +109,7 @@ app.put('/usuario/:id', (request, response) => {
 
 });
 
-app.delete('/usuario/:id', (request, response) => {
+app.delete('/usuario/:id', [verificaToken, verificaAdminRole], (request, response) => {
     let id = request.params.id;
 
     // Usuario.findByIdAndRemove(id, (err, usuarioBorrado) => { // este metodo borra FISICAMENTE el registro

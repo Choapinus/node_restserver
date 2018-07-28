@@ -8,7 +8,10 @@ const mongoose = require('mongoose');
 // declare app express
 const app = express();
 
-app.use(require('./routes/usuario'));
+// gobal routes configuration
+// app.use(require('./routes/usuario'));
+// app.use(require('./routes/login'));
+app.use(require('./routes/index')); // asi solo se importa un solo archivo que contenga todas las rutas
 
 
 // mongo connect
